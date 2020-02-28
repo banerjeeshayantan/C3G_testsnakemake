@@ -1,11 +1,11 @@
 samples = ["brain", "liver"]
-
+# to generate the ouput at the specified folders
 rule all:
     input:
         expand("result_gtf/{sample}.gtf",sample=samples),
         "merged_gtf/merge.gtf"
         "bg/{sample}"
-
+#to merge the transcripts using the -L option for long reads 
 rule stringtie:
     input:
         ref = "data/Mus_musculus.GRCm38.94.gtf",
@@ -17,7 +17,7 @@ rule stringtie:
         "stringtie -L -G {input.ref} {input.bam} -o {output}"       
 
 
-
+#to merge the gtf files produced in the previous stage
 rule stringtie_merge:
     input:
         ref = "data/Mus_musculus.GRCm38.94.gtf",
@@ -28,6 +28,7 @@ rule stringtie_merge:
     shell:
         "stringtie --merge -o {output} -G {input.ref} {input.assembly}"
 
+#to prepare the input for the Ballgown tool. Note the -b use and not the -B use here. I wanted the outputs to be printed in a specific directory /brain and /liver
 rule ballgown_input_prep:
     input:
         merged_gtf = "merged_gtf/merge.gtf",
